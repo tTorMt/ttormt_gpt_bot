@@ -1,0 +1,8 @@
+{
+	"name": "ttormt/ttormt_gpt_bot",
+	"type": "project",
+	"require": {
+		"php": "^8.3",
+		"telegram-bot/api": "*"
+	}
+}
