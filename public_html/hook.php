@@ -3,6 +3,7 @@
 
 use TelegramBot\Api\Client;
 use TelegramBot\Api\Types\Message;
+use TelegramBot\Api\Types\Update;
 
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../secret/secret.php';
@@ -28,6 +29,19 @@ try {
     $bot->command('help', function (Message $message) use ($bot) {
         $id = $message->getChat()->getId();
         $bot->sendMessage($id, 'No help. Sorry.:(');
+    });
+
+    $bot->on(function(Update $update) use ($bot) {
+        $message = $update->getMessage();
+        $id = $message->getChat()->getId();
+        if (in_array($id, AUTHORIZED_IDS)) {
+            // TO DO authorized stuff
+            $bot->sendMessage($id, "You'r authorized");
+            return;
+        }
+        $bot->sendMessage($id, "You aren't authorized.Sorry.");
+    }, function () {
+        return true;
     });
 
     $bot->run();
