@@ -17,10 +17,12 @@ require_once __DIR__ . '/../auth/authorized_ids.php';
 class TelegramClient
 {
     private Client $bot;
+    private OpenAiClient $openAi;
 
     public function __construct()
     {
         $this->bot = new Client(TELEGRAM_BOT_SECRET);
+        $this->openAi = new OpenAiClient(OPENAI_API_KEY);
 
         $this->bot->command('getmyid', function (Message $message) {
             $this->getMyId($message);
@@ -76,8 +78,10 @@ class TelegramClient
         $message = $update->getMessage();
         $id = $message->getChat()->getId();
         if (in_array($id, AUTHORIZED_IDS)) {
-            // TO DO authorized stuff
-            $this->bot->sendMessage($id, "You're authorized");
+            $this->bot->sendMessage($id, "You're authorized. Sending the message...");
+            $result = $this->openAi->sendMessage($message->getText());
+            $this->bot->sendMessage($id, "Got the response...");
+            $this->bot->sendMessage($id, $result, 'Markdown');
             return;
         }
         $this->bot->sendMessage($id, "You aren't authorized. Sorry.");
