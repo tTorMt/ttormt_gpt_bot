@@ -1,8 +1,21 @@
 {
 	"name": "ttormt/ttormt_gpt_bot",
-	"type": "project",
+	"description": "Connects OpenAi API to telegram bot Api",
+	"authors": [
+		{
+		"name": "Andrey Dyagolchenko",
+		"email": "ttormt@gmail.com"
+		}
+	],
 	"require": {
 		"php": "^8.3",
-		"telegram-bot/api": "*"
+		"guzzlehttp/guzzle": "^7.9",
+        "openai-php/client": "^0.10.3",
+		"telegram-bot/api": "^2.5"
+	},
+	"autoload": {
+		"psr-4": {
+			"TtormtGptBot\\": "src/"
+		}
 	}
 }
