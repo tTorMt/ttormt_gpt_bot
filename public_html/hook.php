@@ -1,51 +1,19 @@
 <?php
-// Load composer
 
-use TelegramBot\Api\Client;
-use TelegramBot\Api\Types\Message;
-use TelegramBot\Api\Types\Update;
+declare (strict_types=1);
+/*
+/* Webhook file
+*/
+use TtormtGptBot\App;
 
-require __DIR__ . '/../vendor/autoload.php';
-require __DIR__ . '/../secret/secret.php';
-require __DIR__. '/../auth/authorized_ids.php';
-
-// TELEGRAM_BOT_SECRET;
-// TELEGRAM_BOT_NAME;
-// AUTHORIZED_IDS;
+require __DIR__.'/../vendor/autoload.php';
 
 try {
-    $bot = new Client(TELEGRAM_BOT_SECRET);
 
-    $bot->command('getmyid', function (Message $message) use ($bot) {
-        $id = $message->getChat()->getId();
-        $bot->sendMessage($id, 'Your ID is ' . $id);
-    });
+    $app = new App();
+    $app->run();
 
-    $bot->command('start', function (Message $message) use ($bot) {
-        $id = $message->getChat()->getId();
-        $bot->sendMessage($id, 'If you authorized just type your request');
-    });
-
-    $bot->command('help', function (Message $message) use ($bot) {
-        $id = $message->getChat()->getId();
-        $bot->sendMessage($id, 'No help. Sorry.:(');
-    });
-
-    $bot->on(function(Update $update) use ($bot) {
-        $message = $update->getMessage();
-        $id = $message->getChat()->getId();
-        if (in_array($id, AUTHORIZED_IDS)) {
-            // TO DO authorized stuff
-            $bot->sendMessage($id, "You'r authorized");
-            return;
-        }
-        $bot->sendMessage($id, "You aren't authorized.Sorry.");
-    }, function () {
-        return true;
-    });
-
-    $bot->run();
-} catch (\TelegramBot\Api\Exception $exception) {
+} catch (Exception $exception) {
     // TO DO error logging
-    file_put_contents(__DIR__.'/../errors', $exception->getMessage());
+    file_put_contents(__DIR__ . '/../errors', $exception->getMessage());
 }
