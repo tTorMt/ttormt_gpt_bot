@@ -19,6 +19,8 @@ class OpenAiClient
 
     public function __construct(string $key)
     {
+        $config = parse_ini_file(__DIR__.'/../config/conf.ini');
+        $this->model = $config['model'];
         $this->openAi = OpenAI::factory()
             ->withApiKey($key)
             ->withHttpClient(new HttpClient())
