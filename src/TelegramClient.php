@@ -10,7 +10,6 @@ use TelegramBot\Api\Types\Message;
 use TelegramBot\Api\Types\Update;
 
 require_once __DIR__ . '/../secret/secret.php';
-require_once __DIR__ . '/../auth/authorized_ids.php';
 
 /**
  * Telegram Bot API client class
@@ -55,7 +54,7 @@ class TelegramClient
     }
 
     /**
-     * The getmyid command. You can use this id for user authorization
+     * The info command. 
      */
     public function info(Message $message)
     {
@@ -78,27 +77,32 @@ class TelegramClient
     public function message(Update $update)
     {
         $message = $update->getMessage();
-        $id = $message->getChat()->getId();
-        if (!in_array($id, AUTHORIZED_IDS)) {
-            $this->bot->sendMessage($id, "You aren't authorized. Sorry.");
+        $userID = $message->getChat()->getId();
+        $conversation = new Conversation($userID);
+
+        // If assistant initialization returns false it means there is no user with such ID.
+        if ($conversation->initAssistant() === false) {
+            $this->bot->sendMessage($userID, "You aren't authorized. Sorry.");
             return;
         }
-        $this->bot->sendMessage($id, "You're authorized. Sending the message...");
+
+        $this->bot->sendMessage($userID, "You're authorized. Sending the message...");        
+        
         if (!empty($photo = $message->getPhoto())) {
             $photo = array_pop($photo);
             $fileId = $photo->getFileId();
             $file = $this->bot->getFile($fileId);
             $downloadPath = self::API_LINK . $file->getFilePath();
-            $result = $this->openAi->sendPhoto($downloadPath, $message->getCaption());
+            $result = $conversation->sendPhoto($downloadPath, $message->getCaption());
         } elseif ($messageText = $message->getText()) {
-            $result = $this->openAi->sendMessage($messageText);
+            $result = $conversation->sendMessage($messageText);
         }
         if (is_null($result)) {
-            $this->bot->sendMessage($id, "No allowed content present");
+            $this->bot->sendMessage($userID, "No allowed content present");
             return;
         }
-        $this->bot->sendMessage($id, "Got the response...");
-        $this->bot->sendMessage($id, $result, 'Markdown');
+        $this->bot->sendMessage($userID, "Got the response...");
+        $this->bot->sendMessage($userID, $result, 'Markdown');
     }
 
     /**

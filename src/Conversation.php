@@ -6,6 +6,8 @@ namespace TtormtGptBot;
 
 use Exception;
 
+require_once __DIR__ . '/../secret/secret.php';
+
 /**
  * Handles conversation history for a specific user.
  */
@@ -51,12 +53,36 @@ class Conversation
     }
 
     /**
+     * Sends message to openai api with message history
+     */
+    public function sendMessage(string $message): string
+    {
+        $openAI = new OpenAiClient(OPENAI_API_KEY);
+        $messages = $this->prepareMessages($message);
+        $answer = $openAI->sendMessage($messages);
+        $this->storeHistory($answer);
+        return $answer;
+    }
+
+    /**
+     * Sends photo message to openai api with message history.
+     */
+    public function sendPhoto(string $downloadPath, ?string $caption = ''): string
+    {
+        $openAI = new OpenAiClient(OPENAI_API_KEY);
+        $messages = $this->preparePhoto($downloadPath, $caption);
+        $answer = $openAI->sendMessage($messages);
+        $this->storeHistory($answer);
+        return $answer;
+    }
+
+    /**
      * Prepares a message using the conversation history, stores it, and returns messages
      *
      * @param string $question The user's question or input.
      * @return array Messages array
      */
-    public function prepareMessages(string $question): array
+    private function prepareMessages(string $question): array
     {
         $this->message = $question;
         $history = $this->storage->getMessages($this->userID);
@@ -86,7 +112,7 @@ class Conversation
      *
      * @param string $answer The answer received from the OpenAI API.
      */
-    public function storeHistory(string $answer) 
+    private function storeHistory(string $answer) 
     {
         if (is_null($this->message)) {
             throw new Exception('No message saved');
@@ -101,11 +127,16 @@ class Conversation
      * @param string $question The accompanying message.
      * @return array Messages array.
      */
-    public function preparePhoto(string $link, string $question): array
+    private function preparePhoto(string $link, string $question): array
     {
         $this->message = $question;
         $history = $this->storage->getMessages($this->userID);
-        $formattedMessages = [];
+        $formattedMessages = [
+            [
+                'role' => 'system',
+                'content' => $this->assistant ?? ''
+            ]
+        ];
 
         foreach ($history as $message) {
             $formattedMessages[] = [

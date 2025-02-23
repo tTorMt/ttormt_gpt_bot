@@ -15,7 +15,6 @@ class OpenAiClient
 {
     private Client $openAi;
     private string $model = 'gpt-4o-mini';
-    private string $caracter = 'Answer like old and kind grandmother.';
 
     public function __construct(string $key)
     {
@@ -28,51 +27,13 @@ class OpenAiClient
     }
 
     /**
-     * Sends a message to API
+     * Sends a message to the API
      */
-    public function sendMessage(string $message): string
+    public function sendMessage(array $messages): string
     {
         $response = $this->openAi->chat()->create([
             'model' => $this->model,
-            'messages' => [
-                [
-                    'role' => 'system',
-                    'content' => $this->caracter
-                ],
-                [
-                    'role' => 'user',
-                    'content' => $message
-                ]
-            ]
-        ]);
-        return $response->choices[0]->message->content;
-    }
-
-    public function sendPhoto(string $downloadPath, ?string $caption = ''): string
-    {
-        $response = $this->openAi->chat()->create([
-            'model' => $this->model,
-            'messages' => [
-                [
-                    'role' => 'system',
-                    'content' => $this->caracter
-                ],
-                [
-                    'role' => 'user',
-                    'content' => [
-                        [
-                            'type' => 'text',
-                            'text' => $caption
-                        ],
-                        [
-                            'type' => 'image_url',
-                            'image_url' => [
-                                'url' => $downloadPath
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+            'messages' => $messages
         ]);
         return $response->choices[0]->message->content;
     }
