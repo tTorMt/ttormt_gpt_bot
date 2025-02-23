@@ -25,7 +25,7 @@ class TelegramClient
         $this->bot = new Client(TELEGRAM_BOT_SECRET);
         $this->openAi = new OpenAiClient(OPENAI_API_KEY);
 
-        $this->bot->command('getmyid', function (Message $message) {
+        $this->bot->command('get_my_id', function (Message $message) {
             $this->getMyId($message);
         });
 
@@ -37,6 +37,10 @@ class TelegramClient
             $this->help($message);
         });
 
+        $this->bot->command('new_conversation', function (Message $message) {
+            $this->newConversation($message);
+        });
+
         $this->bot->on(function (Update $update) {
             $this->message($update);
         }, function () {
@@ -45,7 +49,7 @@ class TelegramClient
     }
 
     /**
-     * The getmyid command. You can use this id for user authorization
+     * The get_my_id command. You can use this id for user authorization
      */
     public function getMyId(Message $message)
     {
@@ -69,6 +73,24 @@ class TelegramClient
     {
         $id = $message->getChat()->getId();
         $this->bot->sendMessage($id, 'Contact admin to use this bot');
+    }
+
+    /**
+     * Start new conversation. Clear history.
+     */
+    public function newConversation(Message $message)
+    {
+        $userID = $message->getChat()->getId();
+        $conversation = new Conversation($userID);
+
+        // If assistant initialization returns false it means there is no user with such ID.
+        if ($conversation->initAssistant() === false) {
+            $this->bot->sendMessage($userID, "You aren't authorized. Sorry.");
+            return;
+        }
+
+        $conversation->clearConversation();
+        $this->bot->sendMessage($userID, "Done!");
     }
 
     /**
