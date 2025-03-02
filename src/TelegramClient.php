@@ -120,8 +120,8 @@ class TelegramClient
             return;
         }
 
-        $this->bot->sendMessage($userID, "You're authorized. Sending the message...");        
-        
+        $this->bot->sendMessage($userID, "You're authorized. Sending the message...");
+
         if (!empty($photo = $message->getPhoto())) {
             $photo = array_pop($photo);
             $fileId = $photo->getFileId();
@@ -138,7 +138,10 @@ class TelegramClient
         $this->bot->sendMessage($userID, "Got the response...");
 
         $formatter = new MessageFormatter($result);
-        $this->bot->sendMessage($userID, $formatter->format(), 'MarkdownV2');
+
+        foreach ($formatter->format() as $formattedMessage) {
+            $this->bot->sendMessage($userID, $formattedMessage, 'MarkdownV2');
+        }
     }
 
     /**
