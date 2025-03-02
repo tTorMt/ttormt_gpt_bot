@@ -15,5 +15,5 @@ try {
 
 } catch (Exception $exception) {
     // TO DO error logging
-    file_put_contents(__DIR__ . '/../errors', $exception->getMessage());
+    file_put_contents(__DIR__ . '/../errors', date('Y-m-d_H:i').' '.$exception->getMessage().PHP_EOL, FILE_APPEND);
 }
