@@ -17,13 +17,11 @@ require_once __DIR__ . '/../secret/secret.php';
 class TelegramClient
 {
     private Client $bot;
-    private OpenAiClient $openAi;
     private const string API_LINK = 'https://api.telegram.org/file/bot' . TELEGRAM_BOT_SECRET . '/';
 
     public function __construct()
     {
         $this->bot = new Client(TELEGRAM_BOT_SECRET);
-        $this->openAi = new OpenAiClient(OPENAI_API_KEY);
 
         $this->bot->command('get_my_id', function (Message $message) {
             $this->getMyId($message);
