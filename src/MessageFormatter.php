@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace TtormtGptBot;
 
 /**
- * Converts openAI API messages to MarkdownV2
+ * Converts OpenAI API messages to MarkdownV2 format.
  */
 class MessageFormatter
 {
     private string $message;
+
+    // Special characters that need to be escaped
     private const SPECIAL_CHARS = [
         '_',
         '*',
@@ -29,6 +31,8 @@ class MessageFormatter
         '.',
         '!'
     ];
+
+    // Corresponding escape sequences for the special characters
     private const REPLACEMENT = [
         '\_',
         '\*',
@@ -49,6 +53,7 @@ class MessageFormatter
         '\!'
     ];
 
+    // Markup patterns for different formatting
     private const MARKUPS = [
         'code' => '```',
         'header' => '###',
@@ -56,13 +61,20 @@ class MessageFormatter
         'url' => '/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/'
     ];
 
+    /**
+     * Constructs a MessageFormatter instance with the given message.
+     *
+     * @param string $message The message to be formatted.
+     */
     public function __construct(string $message)
     {
         $this->message = $message;
     }
 
     /**
-     * Formats the openAI API output.
+     * Formats the OpenAI API output to MarkdownV2.
+     *
+     * @return string The formatted message in MarkdownV2.
      */
     public function format(): string
     {
@@ -103,7 +115,10 @@ class MessageFormatter
     }
 
     /**
-     * Escapes special chars with '/'.
+     * Escapes special characters with their corresponding escape sequences.
+     *
+     * @param string $part The part of the message to escape.
+     * @return string The escaped part of the message.
      */
     private function escape(string $part): string
     {

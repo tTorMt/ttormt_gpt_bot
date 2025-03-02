@@ -9,7 +9,7 @@ require_once __DIR__.'/../secret/secret.php';
 use mysqli;
 
 /**
- * Handles database. Uses mysqli.
+ * Handles database interactions using mysqli.
  */
 class StorageHandler
 {
@@ -23,6 +23,9 @@ class StorageHandler
         'getMessages' => 'SELECT * FROM ( SELECT * FROM message WHERE user_id = ? ORDER BY message_id DESC LIMIT ? ) AS mes ORDER BY message_id',
     ];
 
+    /**
+     * Constructs a StorageHandler instance and establishes a database connection.
+     */
     public function __construct() 
     {
         $config = parse_ini_file(__DIR__.'/../config/conf.ini');
@@ -31,7 +34,10 @@ class StorageHandler
     }
 
     /**
-     * Gets assistant characteristic.
+     * Gets the assistant's characteristic for a specified user.
+     *
+     * @param int $userID The ID of the user.
+     * @return string|false The assistant's characteristic, or false if not found.
      */
     public function getAssistant(int $userID): string|false
     {
@@ -44,7 +50,10 @@ class StorageHandler
     }
 
     /**
-     * Deletes all messages in conversation
+     * Deletes all messages associated with a specified user.
+     *
+     * @param int $userID The ID of the user.
+     * @return void
      */
     public function clearMessages(int $userID)
     {
@@ -54,7 +63,11 @@ class StorageHandler
     }
 
     /**
-     * Changes assistant characteristic
+     * Changes the assistant's characteristic for a specified user.
+     *
+     * @param int $userID The ID of the user.
+     * @param string $character The new assistant characteristic.
+     * @return bool True if the update was successful, false otherwise.
      */
     public function changeAssistant(int $userID, string $character): bool
     {
@@ -66,7 +79,12 @@ class StorageHandler
     }
 
     /**
-     * Stores question and answer messages.
+     * Stores a user's question and the assistant's answer in the database.
+     *
+     * @param int $userID The ID of the user.
+     * @param string $question The user's question.
+     * @param string $answer The assistant's answer.
+     * @return bool True if both messages were successfully stored, false otherwise.
      */
     public function storeMessages(int $userID, string $question, string $answer): bool
     {
@@ -77,7 +95,10 @@ class StorageHandler
     }
 
     /**
-     * Gets array of user conversation.
+     * Retrieves an array of messages associated with a specified user.
+     *
+     * @param int $userID The ID of the user.
+     * @return array An associative array of messages, with each message as an associative array.
      */
     public function getMessages(int $userID): array
     {

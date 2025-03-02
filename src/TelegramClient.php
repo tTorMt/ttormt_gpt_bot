@@ -12,7 +12,11 @@ use TelegramBot\Api\Types\Update;
 require_once __DIR__ . '/../secret/secret.php';
 
 /**
- * Telegram Bot API client class
+ * Class TelegramClient
+ *
+ * A client for interacting with the Telegram Bot API.
+ * This class handles incoming messages and commands,
+ * allowing users to interact with the bot functionality.
  */
 class TelegramClient
 {
@@ -47,7 +51,9 @@ class TelegramClient
     }
 
     /**
-     * The get_my_id command. You can use this id for user authorization
+     * Sends the user's Telegram ID when the 'get_my_id' command is issued.
+     *
+     * @param Message $message The incoming message containing the user request.
      */
     public function getMyId(Message $message)
     {
@@ -56,7 +62,9 @@ class TelegramClient
     }
 
     /**
-     * The info command. 
+     * Sends an informational message when the 'start' command is issued.
+     *
+     * @param Message $message The incoming message containing the user request.
      */
     public function info(Message $message)
     {
@@ -65,7 +73,9 @@ class TelegramClient
     }
 
     /**
-     * Info on help command
+     * Provides help information when the 'help' command is issued.
+     *
+     * @param Message $message The incoming message containing the user request.
      */
     public function help(Message $message)
     {
@@ -74,7 +84,9 @@ class TelegramClient
     }
 
     /**
-     * Start new conversation. Clear history.
+     * Initiates a new conversation and clears the conversation history.
+     *
+     * @param Message $message The incoming message containing the user request.
      */
     public function newConversation(Message $message)
     {
@@ -92,7 +104,9 @@ class TelegramClient
     }
 
     /**
-     * Makes conversation with OpenAI API
+     * Processes incoming messages and sends them to the OpenAI API for processing.
+     *
+     * @param Update $update The update containing the incoming message and its details.
      */
     public function message(Update $update)
     {
@@ -100,7 +114,7 @@ class TelegramClient
         $userID = $message->getChat()->getId();
         $conversation = new Conversation($userID);
 
-        // If assistant initialization returns false it means there is no user with such ID.
+        // Check if the user is authorized
         if ($conversation->initAssistant() === false) {
             $this->bot->sendMessage($userID, "You aren't authorized. Sorry.");
             return;
@@ -128,7 +142,7 @@ class TelegramClient
     }
 
     /**
-     * Runs the telegram bot
+     * Runs the Telegram bot, listening for updates and handling them.
      */
     public function run()
     {

@@ -16,6 +16,11 @@ class OpenAiClient
     private Client $openAi;
     private string $model = 'gpt-4o-mini';
 
+    /*
+     * OpenAiClient constructor.
+     *
+     * @param string $key The API key for authenticating with OpenAI.
+     */
     public function __construct(string $key)
     {
         $config = parse_ini_file(__DIR__.'/../config/conf.ini');
@@ -26,8 +31,11 @@ class OpenAiClient
             ->make();
     }
 
-    /**
-     * Sends a message to the API
+    /*
+     * Sends a message to the OpenAI API and retrieves the response.
+     *
+     * @param array $messages An array of messages to send to the API.
+     * @return string The content of the response message from the API.
      */
     public function sendMessage(array $messages): string
     {
