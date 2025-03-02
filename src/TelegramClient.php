@@ -124,7 +124,9 @@ class TelegramClient
             return;
         }
         $this->bot->sendMessage($userID, "Got the response...");
-        $this->bot->sendMessage($userID, $result, 'Markdown');
+
+        $formatter = new MessageFormatter($result);
+        $this->bot->sendMessage($userID, $formatter->format(), 'MarkdownV2');
     }
 
     /**
